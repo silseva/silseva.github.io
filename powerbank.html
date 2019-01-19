@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<title></title>
+<!--<meta name="robots" content="index, follow">
+<meta name="keywords" content="Enter list of comma separated keywords here">
+<meta name="description" content="Enter website description for search engine results here">-->
+
+<link rel="stylesheet" href="/css/core.css" type="text/css">
+<link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+<link rel="stylesheet" href="/css/plugins.css" type="text/css">
+<link rel="stylesheet" href="/css/syntax.css" type="text/css">
+</head> 
+<body  onload="">
+    <div id="TOP"></div>
+    <div id="body">
+
+<!-- <div id="languagemenu"></div> -->
+        <div id="sitename"></div><br>
+
+        <div id="header">
+          <div id="mainnav" class="dropdown">
+            <ul class="menulevel1">
+              
+              <li class="docs">
+                <a href="/">Home</a>
+              </li>
+            
+              <li class="docs">
+                <a href="chiSono.html">About me</a>
+              </li>
+              
+              <li class="docs">
+                <a href="">Idee e Progetti</a>
+                <ul class="menulevel2">                                  
+                  
+                  <li class="doc"><a href=""> Progetti </a>
+                    <ul class="menulevel3">
+                      <!--<li class="doc"><a href="gte1200.html">Interfaccia AT Samsung GT-E1200</a></li>-->
+                    </ul>
+                  </li>
+                  
+                  <li class="doc"><a href=""> Progettini </a>
+                    <ul class="menulevel3">
+                      <li class="doc"><a href="elet.html">Raccolta di circuiti elettronici assortiti</a></li>
+                      <li class="doc"><a href="contapersone.html">Contapersone</a></li>
+                      <li class="doc"><a href="powerbank.html">Commutatore di alimentazione</a></li>
+                    </ul>
+                  </li>
+                  
+                  <li class="doc"><a href=""> Esperimenti vari</a>
+                    <ul class="menulevel3">
+                      <li class="doc"><a href="gte1200.html">Interfaccia AT Samsung GT-E1200</a></li>
+                    </ul>
+                  </li>
+                  
+                </ul>
+              </li>
+            
+              <li class="docs">
+                <a href="">Tutto il resto</a>
+                <ul class="menulevel2">
+                
+                  <!--<li class="doc"><a href=""> Modellismo ferroviario </a>
+                    <ul class="menulevel3">
+                      <li class="doc"><a href="gte1200.html">Interfaccia AT Samsung GT-E1200</a></li>
+                    </ul>
+                  </li> -->
+                  
+                  <li class="doc"><a href="raccolta_link.html"> Raccolta di link vari </a>
+                    <ul class="menulevel3">                      
+                    </ul>
+                  </li>
+                  
+                </ul>
+            </ul>
+            
+            <!--<ul class="language">
+              <li class="docs">
+                <a href="/en"><img src="/images/en.png" width="25px" height="16px"></a>
+              </li>
+            </ul>-->
+          </div>                                    
+        </div>
+        
+        <div id="content">
+        
+        <h2 id="commutatore-di-alimentazione-power-bank---pannello-solare">Commutatore di alimentazione power bank - pannello solare:</h2>
+
+<p>Questo sistema è stato progettato in occasione di una richiesta fattami da un conoscente: questa persona, studente di scienze naturali, stava realizzando un prototipo di un
+dispositivo da usare durante la sua attività di studio sul campo. Lo studio che stava conducendo era legato al censimento di determinate specie di rospi in zone nel nord della
+Lombardia e l’oggetto in questione aveva il compito di registrare i rumori del posto dove era collocato, unite a misure di temperatura e umidità dell’aria, ogni ora per più giorni di seguito. Ovviamente un sistema del genere aveva bisogno di una fonte di alimentazione che gli consentisse di funzionare senza problemi in luoghi piuttosto remoti, tipicamente ai bordi di uno stagno, ed è qui che entra in gioco il mio lavoro.<br />
+Il mio “committente” aveva bisogno di un sistema funzionante in breve tempo senza che fosse particolarmente raffinato (l’ho realizzato utilizzando solo componenti che avevo a portata di mano, in effetti), motivo per cui abbiamo optato per una soluzione piuttosto grezza ma efficace: si è deciso di usare un pannello solare da 10W con uscita a 5V (uno di quelli che vendono al Decathlon da usare caricare il telefono, per intendersi) come fonte di energia unito ad un power bank per telefoni cellulari. Il power bank avrebbe fornito energia durante la notte, mentre il pannello solare, durante il giorno, avrebbe alimentato il tutto e contemporaneamente ricaricato la batteria. Un approccio del genere, però, presentava due problemi:</p>
+
+<ol>
+  <li>gestire il passaggio del carico da power bank a pannello solare e viceversa;</li>
+  <li>gestire il comportamento del power bank, il quale spegne brutalmente l’uscita non appena viene messo sotto carica.</li>
+  <li></li>
+</ol>
+
+<p>Il circuito a cui è dedicata questa pagina, come è facilmente comprensibile, ha lo scopo di “domare” il comportamento selvaggio del power bank in modo da ottenere ciò che ci eravamo prefissi. Ordunque, ecco qui lo schema (disegnato in matito-cad, vista la sua semplicità):</p>
+
+<p><br /><br /><img src="/images/circuito_pb.jpg" width="100%" height="auto" /><br /><br /></p>
+
+<p>Come si può vedere, il tutto è poco più di un microcontrollore - un PIC 12F1572 - con un paio di mosfet usati per gestire le parti di potenza: il micro in questione non fa altro che leggere periodicamente la tensione cacciata fuori dal pannello solare e stabilire, tramite opportune soglie, se è possibile mettere sotto carica il power bank oppure, al contrario, se è il momento di scollegare il carico dal pannello e metterlo sotto carica.<br />
+Analizzando il tutto un po’ più nel dettaglio abbiamo:</p>
+
+<ul>
+  <li>un mosfet che collega la presa di ricarica del power bank al pannello solare;</li>
+  <li>un mosfet che collega il pannello solare all’uscita verso il carico;</li>
+  <li>un doppio diodo schottky per commutare in automatico, tra power bank e pannello solare, quale sorgente di alimentazione inviare al carico;</li>
+  <li>un partitore di tensione con rapporto 10/43 per la lettura della tensione del pannello solare;</li>
+  <li></li>
+</ul>
+
+<p>In aggiunta, il micro può ricevere un segnale in ingresso per forzare il collegamento del power bank al carico (questo verrà spiegato più nel dettaglio dopo) e un’uscita open-drain da collegare al tastino di accensione del power bank. Quest’ultima è di fondamentale importanza perché non sempre il power bank si accende da solo non appena viene tolta la ricarica (cosa che molti power bank fanno), a volte è necessario pungolarlo un poco. <br /></p>
+
+<p>Il partitore di tensione, invece, è stato dimensionato con un rapporto di riduzione piuttosto forte - 10/43 fa 0.232558 - per il seguente motivo: la tensione di riferimento dell’ADC del micro può essere collegata direttamente alla tensione di alimentazione oppure fissata tramite un riferimento di tensione interno. Ovviamente in un’applicazione come questa, dove la tensione di alimentazione del micro può oscillare molto e potenzialmente essere anche inferiore rispetto alla tensione da misurare, non possiamo collegare la tensione di riferimento dell’ADC direttamente all’alimentazione: dobbiamo per forza collegarla al riferimento di tensione, il quale può essere fissato a 1.024V, 2.048V oppure 4.096V.<br />
+Supponendo una tensione minima di funzionamento del “coso” di 3V o poco più, ho scelto di fissare la tensione di riferimento a 2.048V: questa scelta, guarda caso, limita la massima tensione misurabile dall’ADC a… 2.048V! Il partitore con rapporto 10/43, quindi, fa sì che, con una tensione in ingresso di 5.2V (ovvero la tensione erogata dal pannello solare in pieno sole e a vuoto), la tensione letta dall’ADC sia di circa 1.21V, risolvendo ogni problema di misura. <br /></p>
+
+<p>Esaurito l’hardware, passiamo al software; il programma che “gira” sul micro ha una logica di funzionamento molto semplice:</p>
+
+<ul>
+  <li>leggo la tensione ai capi del pannello solare;</li>
+  <li>se la ricarica è disinserita e la tensione è sufficientemente alta: collego il carico al pannello solare e metto in carica il power bank;</li>
+  <li>se la ricarica è inserita e la tensione del pannello solare è troppo bassa: smetto di ricaricare il power bank, scollego il carico dal pannello solare e lo collego al power bank;</li>
+  <li>ricomincio dall’inizio.</li>
+  <li></li>
+</ul>
+
+<p>L’unica parte leggermente ostica di questo giochino dello stacca - attacca riguarda l’assicurarsi che la tensione di alimentazione verso il carico sia il più possibile costante e, soprattutto, senza cadute di tensione improvvise che ne provocherebbero il riavvio (e ciò non è buono, come si può facilmente immaginare). In effetti se il sistema avesse potuto tollerare i riavvii, non avrei fatto tutto questo accrocchio e avrei usato un paio di diodi o poco più: la vecchia legge del <em>keep it simple and stupid</em> rimane sempre valida.<br />
+Per rispettare questo importante requisito, tenendo anche conto del fatto che il power bank ha un minimo tempo di accensione, la commutazione da pannello solare a power bank e viceversa viene gestita nel seguente modo:</p>
+
+<p><em>Da pannello a power bank:</em></p>
+<ul>
+  <li>Disconnessione ricarica power bank</li>
+  <li>Attesa 100ms</li>
+  <li>Invio comando di accensione al power bank collegando a massa per 100ms il segnale corrispondente</li>
+  <li>Attesa 300ms per assicurare la completa accensione del power bank</li>
+  <li>Disconnessione pannello solare dal carico (il power bank eroga corrente verso il carico attraverso il diodo)</li>
+  <li></li>
+</ul>
+
+<p><em>Da power bank a pannello:</em></p>
+<ul>
+  <li>Collegamento pannello al carico</li>
+  <li>Attesa 100ms</li>
+  <li>Collegamento ricarica power bank, cosa che ne provoca l’automatico spegnimento</li>
+  <li></li>
+</ul>
+
+<p>Di particolare importanza è, nel passaggio da pannello a power bank, l’invio del segnale di accensione a quest’ultimo: ho notato che, tipicamente quando la tensione di ricarica è piuttosto bassa, il power bank tende a non accendersi automaticamente non appena viene tolta la tensione alla presa di ricarica. Quindi, per evitare problemi di questo genere, il micro invia sempre un segnale di accensione, simulando la pressione dell’opportuno tastino.<br />
+Un’altra situazione da tenere in conto è il fatto che, sotto carico, la tensione del pannello solare tende a scendere. Ciò si verifica in maniera particolarmente significativa al mattino, dall’alba fin verso le 9:30 circa, e alla sera, dalle 18 circa al tramonto: sebbene il pannello solare, a vuoto, eroghi una tensione di 5V (perfettamente adatta a ricaricare il power bank), una volta messo sotto carico la tensione in uscita crolla a 4.1V o meno, un livello insufficiente a caricare il power bank e/o ad alimentare il carico.
+Questo comportamento viene gestito dal software comparando la tensione del pannello solare con tre soglie differenti, secondo il diagramma di flusso seguente:</p>
+
+<p><br /><center><img src="/images/dFlusso_pb.png" /></center><br /></p>
+
+<p>Ciascuna delle tre soglie di intervento può essere regolata indipendentemente dalle altre; nel mio caso sono state impostate ai seguenti valori:</p>
+
+<ul>
+  <li>V_ON  = 4.9V</li>
+  <li>V_CHG = 4.5V</li>
+  <li>V_OFF = 4.45V</li>
+  <li></li>
+</ul>
+
+<p>Quando il carico è alimentato dal pannello solare è anche possibile forzare la commutazione da pannello a power bank, ad esempio nel caso in cui il carico attivi qualche funzionalità ad alto assorbimento di corrente, portando a livello logico alto l’ingresso indicato con “disconnect_cmd” nello schema. Non appena esso torna a livello logico basso il carico viene ricollegato al pannello solare e il power bank torna ad essere messo sotto carica.<br />
+Infine, <strong>il codice sorgente del firmware è reperibile <a href="/files/main.c">qui</a></strong> ed è stato scritto in linguaggio C e compilato con XC8 versione <em>xxxx</em>.</p>
+
+        
+        </div>
+        <div id="footerbox">
+        <div id="footer">
+            Last update: 19 January 2019 &bull;
+    </div>
+</body>
+</html>
