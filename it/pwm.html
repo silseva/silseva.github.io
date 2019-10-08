@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<title></title>
+<!--<meta name="robots" content="index, follow">
+<meta name="keywords" content="Enter list of comma separated keywords here">
+<meta name="description" content="Enter website description for search engine results here">-->
+
+<link rel="stylesheet" href="/css/core.css" type="text/css">
+<link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+<link rel="stylesheet" href="/css/plugins.css" type="text/css">
+<link rel="stylesheet" href="/css/syntax.css" type="text/css">
+</head> 
+<body  onload="">
+    <div id="body">
+
+        <div id="sitename"></div><br>
+
+        <div id="header">
+          <div id="mainnav" class="dropdown">
+            <ul class="menulevel1">
+
+              <li class="docs">
+                <a href="/it">Home</a>
+              </li>
+
+              <li class="docs">
+                <a href="chiSono.html">About me</a>
+              </li>
+
+              <li class="docs">
+                <a href="">Idee e Progetti</a>
+                <ul class="menulevel2">
+
+                  <li class="doc"><a href=""> Progetti </a>
+                    <ul class="menulevel3">
+                    </ul>
+                  </li>
+
+                  <li class="doc"><a href=""> Progettini </a>
+                    <ul class="menulevel3">
+                      <li class="doc"><a href="elet.html">Raccolta di circuiti elettronici assortiti</a></li>
+                      <li class="doc"><a href="contapersone.html">Contapersone</a></li>
+                      <li class="doc"><a href="powerbank.html">Commutatore di alimentazione</a></li>
+                    </ul>
+                  </li>
+
+                  <li class="doc"><a href=""> Esperimenti vari</a>
+                    <ul class="menulevel3">
+                      <li class="doc"><a href="gte1200.html">Interfaccia AT Samsung GT-E1200</a></li>
+                    </ul>
+                  </li>
+
+                </ul>
+              </li>
+
+              <li class="docs">
+                <a href="">Tutto il resto</a>
+                <ul class="menulevel2">
+
+                  <li class="doc"><a href=""> Modellismo ferroviario </a>
+                    <ul class="menulevel3">
+                    </ul>
+                  </li>
+
+                  <li class="doc"><a href="raccolta_link.html"> Raccolta di link vari </a>
+                    <ul class="menulevel3">
+                    </ul>
+                  </li>
+                </ul>
+            </ul>
+
+            <ul class="language">
+              <li class="docs">
+                <a href="/en"><img src="/images/en.png" width="25px" height="16px"></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="content">
+
+        <h2 id="regolatore-pwm-autooscillante">Regolatore pwm autooscillante</h2>
+
+<p>Questo oggetto molto semplice è frutto di meno di due ore spese durante un pomeriggio con lo scopo di ottenere un regolatore di tensione pwm “ridotto ai minimi termini”. In effetti
+non è molto di più di un amplificatore operazionale in anello aperto (e quindi piuttosto “nervoso”) che accende un MOSFET se la tensione ai capi di C1 scende al disotto di un certo valore di riferimento.<br />
+Lo schema è questo qui:</p>
+
+<center><img src="/images/pwm.jpg" width="500" />&lt;/img&gt;</center>
+
+<p>Indichiamo con Vo la tensione ai capi del condensatore (pari anche alla tensione di uscita), mentre con Vref la tensione di riferimento impostata tramite il trimmer R1. All’uscita dell’amplificatore operazionale avremo una tensione Verr = 10<sup>5</sup>·(Vref - Vo), la quale viene inviata in ingresso al CD4093, ovvero una porta NAND a trigger di Schmitt; poiché la tensione Verr tende a salire al diminuire di Vo rispetto al valore desiderato Vref, quando questa supera il valore di soglia alta del trigger di schmitt l’uscita della porta NAND va a livello basso, accendendo il MOSFET. A questo punto il condensatore comincerà a caricarsi e la tensione Verr a scendere di conseguenza: quando questa raggiungerà il valore di soglia bassa della porta logica ne provocherà la commutazione dell’uscita dal livello basso al livello alto, spegnendo il MOSFET e dando inizio ad un nuovo ciclo di scarica del condensatore.<br />
+Nel complesso la presenza dell’induttanza fa sì che il giochino oscilli ad una frequenza di qualche decina di kHz, questo perché, limitando la corrente che entra nel condensatore all’accensione del MOSFET, allunga il tempo il tempo in cui questo è acceso.</p>
+
+<center><img src="/images/oscillo_pwm.jpg" width="500" />&lt;/img&gt;</center>
+
+<p>Qui sopra sono mostrate le forme d’onda del segnale di comando del mosfet, misurata al pin 3 del CD4093, e il segnale in ingresso al morsetto invertente dell’LM358, pari alla tensione sul condensatore; la tensione di riferimento è di circa 4.5V e il tutto è alimentato a 12V.
+Per quanto riguarda la traccia superiore la scansione verticale è di 5V/Div, mentre la traccia inferiore ha una scansione verticale di 20mV/Div; la base dei tempi è pari a 10uS/Div, cosa che ci consente di osservare che il periodo di commutazione del mosfet è di circa 40uS (pari ad una frequenza di 25kHz) e il duty cycle si aggira attorno al 35%.
+Osservando la seconda traccia, invece, si nota come l’uscita del regolatore presenti un ripple piuttosto elevato, in questo caso pari ad almeno 20mV; ciò è dovuto alla struttura minimalista e piuttosto grossolana del sistema, cosa che ne limita l’uso ad applicazioni dove non è necessaria una tensione di uscita perfettamente livellata, come, ad esempio, la regolazione di velocità di motori elettrici.</p>
+
+
+        </div>
+        <div id="footerbox">
+        <div id="footer">
+            Last update: 08 October 2019 &bull;
+    </div>
+</body>
+</html>
