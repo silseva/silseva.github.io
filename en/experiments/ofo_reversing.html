@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+    <link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+
+    <title>
+        
+    </title>
+
+</head>
+<body  onload="">
+    <div id="body">
+
+        <br>
+
+        <div id="header">
+            <div id="mainnav" class="dropdown">
+
+                <ul class="menulevel1">
+
+                    <li>
+                        <span>
+                            <a href="/en">Home</a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span>
+                            <a href="/en/chiSono.html">About me</a>
+                        </span>
+                    </li>
+
+                    <li><span>Science and Engineering</span>
+                        <ul class="menulevel2">
+
+                            <li>
+                                <span>
+                                    <a href="/en/projects"> (Semi) Serious Projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/misc_projects"> Misc projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/experiments"> Hacks and experiments </a>
+                                </span>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="docs"><span>Everything else</span>
+                        <ul class="menulevel2">
+
+                        </ul>
+                </ul>
+
+                <ul class="language">
+                    <li>
+                        <span>
+                            <a href="/it"><img src="/icons/it.png" width="25px" height="16px"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div> <!-- mainnav -->
+        </div> <!-- header -->
+
+        <div id="content">
+
+            <h2 id="reverse-engineering-of-an-ofo-smart-lock">Reverse engineering of an OFO smart lock</h2>
+
+<p>After the dockless bike sharing firm <em>ofo</em> ceased its service in Milan, both due to the municipality revoking the permissions granted and to vandalism (it has been estimated that around the 10% of the bikes deployed has been damaged), the majority of the bikes has been retired by the company, but a certain number of them - mostly damaged - is still laying around in the city.</p>
+
+<p>These bikes are equipped with a smart padlock which can be unlocked by anyone possessing a smartphone with the firm’s app installed. And here comes the hacker’s curiosity: being always interested in technology, and especially in <em>embedded systems</em>, I always have been wondering what there is under the hood of these padlocks. Thanks to the people belonging to an hackerspace in Milan I satisfied my curiosity: these guys collected some of the now abandoned (and wrecked) <em>ofo</em> bikes with the plan of repairing and then making them available to the other members of the center. Within this process, they detached and put apart the bikes’ padlocks, giving me the ocasion of picking up one of them to do a bit of reverse engineering.</p>
+
+<p>As regards a general description of what’s inside the locking device, <a href="http://ofodufafa.blogspot.com/2018/">this website</a> provides some information: in this page I will extend them with my findings.</p>
+
+<p><strong>Microcontroller’s connections:</strong></p>
+
+<p>The first operation I did was mapping the connections between the nRF51822 microcontroller <a href="#nrfDatasheet">[1]</a> and the other components, both mounted on the PCB and the ones outside it (motor, buzzer and keypad). The results are summarised here:</p>
+
+<table align="center"><tr style="border: none;"><td style="border: none;" valign="top">
+
+<table class="simple_table">
+    <tr>
+        <th> Pin number: </th>
+        <th> Port label: </th>
+        <th> Function: </th>
+    </tr>
+    <tr><td> 3 </td><td> P0.30 </td><td> keypad white leds      </td></tr>
+    <tr><td> 4 </td><td> P0.00 </td><td>                        </td></tr>
+    <tr><td> 5 </td><td> P0.01 </td><td> buzzer                 </td></tr>
+    <tr><td> 6 </td><td> P0.02 </td><td> SW1, locking mechanism </td></tr>
+    <tr><td> 7 </td><td> P0.03 </td><td> GPS rx data (usart)    </td></tr>
+    <tr><td> 8 </td><td> P0.04 </td><td> GPS tx data (usart)    </td></tr>
+    <tr><td> 9 </td><td> P0.05 </td><td> GSM tx data (usart)    </td></tr>
+    <tr><td> 10 </td><td> P0.06 </td><td> GSM rx data (usart)    </td></tr>
+    <tr><td> 11 </td><td> P0.07 </td><td> SW2, locking mechanism </td></tr>
+    <tr><td> 14 </td><td> P0.08 </td><td> LIS3DSH I2C sda        </td></tr>
+    <tr><td> 15 </td><td> P0.09 </td><td> LIS3DSH I2C scl        </td></tr>
+    <tr><td> 16 </td><td> P0.10 </td><td> LIS3DSH interrupt      </td></tr>
+    <tr><td> 17 </td><td> P0.11 </td><td> DC motor for unlocking </td></tr>
+    <tr><td> 18 </td><td> P0.12 </td><td> keypad button "back"   </td></tr>
+    <tr><td> 19 </td><td> P0.13 </td><td> keypad button "4"      </td></tr>
+    <tr><td> 20 </td><td> P0.14 </td><td> keypad button "3"      </td></tr>
+    </table>
+
+</td><td style="border: none;" valign="top">
+
+<table class="simple_table">
+    <tr>
+        <th> Pin number: </th>
+        <th> Port label: </th>
+        <th> Function: </th>
+    </tr>
+    <tr><td> 21 </td><td> P0.15 </td><td> keypad button  "2"   </td></tr>
+    <tr><td> 22 </td><td> P0.16 </td><td> keypad button  "1"   </td></tr>
+    <tr><td> 25 </td><td> P0.17 </td><td>                      </td></tr>
+    <tr><td> 26 </td><td> P0.18 </td><td> GSM module reset     </td></tr>
+    <tr><td> 27 </td><td> P0.19 </td><td> GSM module pwrdown   </td></tr>
+    <tr><td> 28 </td><td> P0.20 </td><td> GSM module pwrkey    </td></tr>
+    <tr><td> 40 </td><td> P0.21 </td><td> TTX                  </td></tr>
+    <tr><td> 41 </td><td> P0.22 </td><td> TRX                  </td></tr>
+    <tr><td> 42 </td><td> P0.23 </td><td> red led              </td></tr>
+    <tr><td> 43 </td><td> P0.24 </td><td> green led            </td></tr>
+    <tr><td> 44 </td><td> P0.25 </td><td> GPS power enable     </td></tr>
+    <tr><td> 45 </td><td> P0.26 </td><td> 32kHz crystal        </td></tr>
+    <tr><td> 46 </td><td> P0.27 </td><td> 32kHz crystal        </td></tr>
+    <tr><td> 47 </td><td> P0.28 </td><td>                      </td></tr>
+    <tr><td> 48 </td><td> P0.29 </td><td> 4V_en (GSM power)    </td></tr>
+</table>
+</td></tr></table>
+
+<p><strong>Microcontroller’s firmware:</strong></p>
+
+<p>Coming to the software side, the padlock’s microcontroller comes with a code locking mechanism which (in theory) prevents reading the contents of the flash memory using a debugger. However, the nRF51822 microcontrollers are affected by a vulnerability which allows, through a debugger, to get the content of the flash memory even when the locking mechanism is enabled <a href="#nrfVuln">[2]</a>. Luckily a python script is available <a href="#nrfdump">[3]</a>, providing a good tool which allows to dump the content of the flash exploiting the aforementioned vulnerability: it’s only necessary to connect the microcontroller to a PC via a SWD tool, like ST-Link.</p>
+
+<p>Once the content of the flash memory has been retrieved, is time to analyse the binary dump searching for program image(s). These can be found easily exploiting the fact that unwritten flash memory cells have (hex) value 0xFFFFFFFF and knowing that a program compiled for Cortex M architecture must start with a vector table defining the addresses for the various interrupt vectors. Sifting through the binary dump, emerges that the microcontroller’s flash memory contains four vector tables at the addresses 0x0000, 0x1000, 0x18000 and 0x3B000. The table below contains the addresses associated to each vector in each of the four tables:</p>
+
+<table class="simple_table" style="margin-left:auto; margin-right:auto;">
+    <!--<caption><em> Pointer values inside the vector tables found </em></caption>-->
+    <tr>
+        <th> Relative position: </th>
+        <th> Vector name: </th>
+        <th> 0x00000 image: </th>
+        <th> 0x01000 image: </th>
+        <th> 0x18000 image: </th>
+        <th> 0x3B000 image: </th>
+    </tr>
+    <tr><td> 0x0000  </td><td> __StackTop             </td><td> 0x000007C0 </td><td> 0x20001500 </td><td> 0x20003EE0 </td><td> 0x20003650 </td></tr>
+    <tr><td> 0x0004  </td><td> Reset_Handler          </td><td> 0x000006D1 </td><td> 0x000164CD </td><td> 0x00018281 </td><td> 0x0003B16D </td></tr>
+    <tr><td> 0x0008  </td><td> NMI_Handler            </td><td> 0x000000D1 </td><td> 0x00002225 </td><td> 0x0001829B </td><td> 0x0003B187 </td></tr>
+    <tr><td> 0x000C  </td><td> HardFault_Handler      </td><td> 0x000006B1 </td><td> 0x00016433 </td><td> 0x0001829D </td><td> 0x0003B189 </td></tr>
+    <tr><td> 0x0010  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0014  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0018  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x001C  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0020  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0024  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0028  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x002C  </td><td> SVC_Handler            </td><td> 0x00000751 </td><td> 0x0001653D </td><td> 0x0001829F </td><td> 0x0003B0D5 </td></tr>
+    <tr><td> 0x0030  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0034  </td><td>                        </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0038  </td><td> PendSV_Handler         </td><td> 0x000000DB </td><td> 0x00002225 </td><td> 0x000182A1 </td><td> 0x0003B18D </td></tr>
+    <tr><td> 0x003C  </td><td> SysTick_Handler        </td><td> 0x000000E5 </td><td> 0x00002225 </td><td> 0x000182A3 </td><td> 0x0003B18F </td></tr>
+    <tr><td> 0x0040  </td><td> POWER_CLOCK_IRQHandler </td><td> 0x000000EF </td><td> 0x000165A9 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0044  </td><td> RADIO_IRQHandler       </td><td> 0x000000F9 </td><td> 0x000165AF </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0048  </td><td> UART0_IRQHandler       </td><td> 0x00000103 </td><td> 0x00002225 </td><td> 0x0001EBC1 </td><td> 0x0003B505 </td></tr>
+    <tr><td> 0x004C  </td><td> SPI0_TWI0_IRQHandler   </td><td> 0x0000010D </td><td> 0x00002225 </td><td> 0x0001E7F5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0050  </td><td> SPI1_TWI1_IRQHandler   </td><td> 0x00000117 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0054  </td><td>                        </td><td> 0x00000121 </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x0058  </td><td> GPIOTE_IRQHandler      </td><td> 0x0000012B </td><td> 0x00002225 </td><td> 0x0001C3D5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x005C  </td><td> ADC_IRQHandler         </td><td> 0x00000135 </td><td> 0x00002225 </td><td> 0x0001B74D </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0060  </td><td> TIMER0_IRQHandler      </td><td> 0x0000013F </td><td> 0x000165B5 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0064  </td><td> TIMER1_IRQHandler      </td><td> 0x00000149 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0068  </td><td> TIMER2_IRQHandler      </td><td> 0x00000153 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x006C  </td><td> RTC0_IRQHandler        </td><td> 0x0000015D </td><td> 0x000165BB </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0070  </td><td> TEMP_IRQHandler        </td><td> 0x00000167 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0074  </td><td> RNG_IRQHandler         </td><td> 0x00000171 </td><td> 0x000165C1 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0078  </td><td> ECB_IRQHandler         </td><td> 0x0000017B </td><td> 0x0001C765 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x007C  </td><td> CCM_AAR_IRQHandler     </td><td> 0x00000185 </td><td> 0x000165CD </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0080  </td><td> WDT_IRQHandler         </td><td> 0x0000018F </td><td> 0x00002225 </td><td> 0x0001ED15 </td><td> 0x0003B609 </td></tr>
+    <tr><td> 0x0084  </td><td> RTC1_IRQHandler        </td><td> 0x00000199 </td><td> 0x00002225 </td><td> 0x0001E7B9 </td><td> 0x0003B465 </td></tr>
+    <tr><td> 0x0088  </td><td> QDEC_IRQHandler        </td><td> 0x000001A3 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x008C  </td><td> LPCOMP_IRQHandler      </td><td> 0x000001AD </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0090  </td><td> SWI0_IRQHandler        </td><td> 0x000001B7 </td><td> 0x00002225 </td><td> 0x0001E809 </td><td> 0x0003B485 </td></tr>
+    <tr><td> 0x0094  </td><td> SWI1_IRQHandler        </td><td> 0x000001C1 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x0098  </td><td> SWI2_IRQHandler        </td><td> 0x000001CB </td><td> 0x00002225 </td><td> 0x0001E811 </td><td> 0x0003B48D </td></tr>
+    <tr><td> 0x009C  </td><td> SWI3_IRQHandler        </td><td> 0x000001D5 </td><td> 0x00002225 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x00A0  </td><td> SWI4_IRQHandler        </td><td> 0x000001DF </td><td> 0x000165D3 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x00A4  </td><td> SWI5_IRQHandler        </td><td> 0x000001E9 </td><td> 0x000165D9 </td><td> 0x000182A5 </td><td> 0x0003B191 </td></tr>
+    <tr><td> 0x00A8  </td><td>                        </td><td> 0x000001F3 </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x00AC  </td><td>                        </td><td> 0x000001FD </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x00B0  </td><td>                        </td><td> 0x00000207 </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x00B4  </td><td>                        </td><td> 0x00000211 </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x00B8  </td><td>                        </td><td> 0x0000021B </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+    <tr><td> 0x00BC  </td><td>                        </td><td> 0x00000225 </td><td> 0x00002225 </td><td> 0x00000000 </td><td> 0x00000000 </td></tr>
+</table>
+
+<p>Currently I’m decompiling and analysing the binary image contained in the flash memory to find what each executable does, I’ll progressively publish here the results.</p>
+
+<p><strong>References:</strong></p>
+
+<p><a name="nrfDatasheet">
+    [1] <a href="https://infocenter.nordicsemi.com/pdf/nRF51822_PS_v3.1.pdf">nRF51822 datasheet</a>
+</a></p>
+
+<p><a name="nrfVuln">
+    [2] <a href="https://blog.includesecurity.com/2015/11/NordicSemi-ARM-SoC-Firmware-dumping-technique.html">Firmware dumping technique for an ARM Cortex-M0 SoC</a>
+</a></p>
+
+<p><a name="nrfdump">
+    [3] <a href="https://github.com/SpiderLabs/nrfdump">Python script for dumping firmware from read-back protected nRF51 chips</a>
+</a></p>
+
+
+        </div> <!-- content -->
+
+            <div id="footerbox">
+                <div id="footer">
+                    Last update: 06 May 2020 &bull;
+                    <br><br>
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="/icons/cc_small.png" />
+                    </a>
+    </div> <!-- body -->
+</body>
+</html>

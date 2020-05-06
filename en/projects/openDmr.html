@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+    <link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+
+    <title>
+        
+    </title>
+
+</head>
+<body  onload="">
+    <div id="body">
+
+        <br>
+
+        <div id="header">
+            <div id="mainnav" class="dropdown">
+
+                <ul class="menulevel1">
+
+                    <li>
+                        <span>
+                            <a href="/en">Home</a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span>
+                            <a href="/en/chiSono.html">About me</a>
+                        </span>
+                    </li>
+
+                    <li><span>Science and Engineering</span>
+                        <ul class="menulevel2">
+
+                            <li>
+                                <span>
+                                    <a href="/en/projects"> (Semi) Serious Projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/misc_projects"> Misc projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/experiments"> Hacks and experiments </a>
+                                </span>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="docs"><span>Everything else</span>
+                        <ul class="menulevel2">
+
+                        </ul>
+                </ul>
+
+                <ul class="language">
+                    <li>
+                        <span>
+                            <a href="/it"><img src="/icons/it.png" width="25px" height="16px"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div> <!-- mainnav -->
+        </div> <!-- header -->
+
+        <div id="content">
+
+            <h2 id="opendmr">OpenDMR</h2>
+
+<p>This project started by an idea of a colleague of mine, Niccolò Izzo (IU2KIN), and is heavily inspired by another open-source project, OpenGD77.<br />
+Aim of this project, following the trail of the OpenGD77 people, is developing (nearly) from scratch an open-source firmware for the Tytera MD-380 radio transceiver. Future plans envisage merging our work with the OpenGD77 one, creating a unique open-source firmware for multiple radio transceivers.</p>
+
+<p>We ground our work on the reverse-engineering efforts of Travis Goodspeed and other people, which allowed to have an extensive documentation of the radio hardware: we have complete schematics, baseband documentation, and the on-board microcontroller (STM32) is well-known.</p>
+
+<p>As regards flashing and running the new firmware on the radio, we worked to leave untouched the original Tytera recovery bootloader: this allows for an easy rollback to the original (or md380tools) firmware in case this is needed. A virtual serial port over USB has been set up also, currently used only for debugging.</p>
+
+<p>The source code is available in this <a href="https://github.com/n1zzo/OpenDMR">GitHub repository</a>, with a minimal and sparse documentation available <a href="https://wiki.izzo.sh/opendmr">here</a>.</p>
+
+<p style="font-size:1.05em; font-weight: bold;">Current progress:</p>
+
+<p> [x] Craft jailbreak bootloader<br />
+ [x] Put radio in STM32 bootloader mode<br />
+ [x] Dump all the flash from bootloader<br />
+ [x] Flash the jailbreak recovery<br />
+ [x] Correctly flash arbitrary payload with TYT recovery<br />
+ [x] Boot baremetal blinking LED<br />
+ [x] Test interrupts<br />
+ [x] Expand RAM at 0x02020000<br />
+ [x] Boot FreeRTOS blinking LED<br />
+ [x] USB Virtual Serial is working<br />
+ [x] stdio to Virtual Serial<br />
+ [x] Keyboard handler<br />
+ [x] Channel knob + buttons<br />
+ [x] Display driver<br />
+ [x] ADC<br />
+ [ ] UI<br />
+ [x] Rectangles<br />
+ [x] Text<br />
+ [ ] All shapes<br />
+ [ ] RSSI + Battery demo<br />
+ [x] RTC<br />
+ [x] Watchdog<br />
+ [ ] FM is working!<br />
+ [ ] Rebase on OpenGD77 codebase<br />
+ [ ] Flash<br />
+ [ ] EEPROM<br />
+ [ ] C5000 registers!<br />
+ [ ] SPI is working<br />
+ [ ] I2C is working<br />
+ [ ] DMR Tier 1<br />
+ [ ] DMR Tier 2<br />
+ [ ] Fancy display graphics<br />
+ [ ] Hotspot mode<br />
+ [ ] SMS<br />
+ [ ] GPS <br />
+ [ ] …</p>
+
+<p><strong>Note:</strong> even if present in the progress list, it’s not strictly necessary to craft a jailbroken recovery bootloader to run the new firmware. As described in the Travis Goodspeed’s <a href="https://www.alchemistowl.org/pocorgtfo/pocorgtfo10.pdf">writeup</a>, the recovery bootloader patch prevents it from setting the flash read protection flag, allowing to do a complete flash dump through the SWD debugging interface.</p>
+
+<p><br /></p>
+<p style="font-size:1.05em; font-weight: bold;">References:</p>
+
+<p>[1] <a href="https://www.opengd77.com/">The OpenGD77 project</a></p>
+
+<p>[2] <a href="https://github.com/rogerclarkmelbourne/OpenGD77">OpenGD77 project’s repository</a></p>
+
+<p>[3] <a href="https://github.com/travisgoodspeed/md380tools">MD380Tools code repository</a></p>
+
+<p>[4] <a href="https://github.com/pchickey/md380-re">MD380 reverse engineering</a></p>
+
+<p>[5] <a href="https://www.qsl.net/dl4yhf/RT3/md380_hw.html">Page aboud MD380 hardware</a></p>
+
+<p>[6] <a href="https://www.alchemistowl.org/pocorgtfo/pocorgtfo10.pdf">Travis Goodspeed’s writeup</a></p>
+
+
+        </div> <!-- content -->
+
+            <div id="footerbox">
+                <div id="footer">
+                    Last update: 06 May 2020 &bull;
+                    <br><br>
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="/icons/cc_small.png" />
+                    </a>
+    </div> <!-- body -->
+</body>
+</html>

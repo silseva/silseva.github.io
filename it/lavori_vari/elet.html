@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+    <link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+
+    <title>
+        
+    </title>
+
+</head>
+<body  onload="">
+    <div id="body">
+
+        <br>
+
+        <div id="header">
+            <div id="mainnav" class="dropdown">
+
+                <ul class="menulevel1">
+
+                    <li>
+                        <span>
+                            <a href="/it">Home</a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span>
+                            <a href="/it/chiSono.html">About me</a>
+                        </span>
+                    </li>
+
+                    <li><span>Scienza e Ingegneria</span>
+                        <ul class="menulevel2">
+
+                            <li>
+                                <span>
+                                    <a href="/it/progetti"> Progetti (semi) seri </a>
+                                </span>
+                            </li>
+                            <li>
+                                <span>
+                                    <a href="/it/lavori_vari"> Creazioni varie </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/it/esperimenti"> Esperimenti e <i>hack </i> </a>
+                                </span>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                    <li class="docs"><span>Tutto il resto</span>
+                        <ul class="menulevel2">
+                            <!-- <li>
+                                <span>
+                                    <a href="raccolta_link.html"> Raccolta di link vari </a>
+                                </span>
+                            </li> -->
+                        </ul>
+                </ul>
+
+                <ul class="language">
+                    <li>
+                        <span>
+                            <a href="/en"><img src="/icons/en.png" width="25px" height="16px"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div> <!-- mainnav -->
+        </div> <!-- header -->
+
+        <div id="content">
+
+            <h2 id="raccolta-di-circuiti-elettronici-vari">Raccolta di circuiti elettronici vari:</h2>
+
+<p><strong>• Piccola scheda con PIC18F2685 e CAN bus</strong><br />
+<em>Breakout board</em> attrezzata con un PIC18F2685, un’interfaccia fisica CAN bus (MCP2551) e un regolatore di tensione lineare UA78M05. La porta C del microcontrollore è disponibile esternamente su un connettore recante anche le connessioni di massa e 5V, mentre la porta A pilota 8 MOSFET a canale N (DMG6898LSD-13) i cui drain sono disponibili verso l’esterno tramite connettore passo 2,54mm sul quale è anche disponibile una connessione verso il positivo dell’alimentazione esterna; sono stati previsti anche i diodi di ricircolo a protezione dei MOSFET, collegati al positivo dell’alimentazione esterna e posti vicino alle piazzole di connessione. A questo si aggiunge un jumper con resistenza di pull down che consente di portare a livello alto il pin RB0.<br />
+CAN bus e alimentazione vengono portati tramite un connettore a vite a 4 poli passo 5,08mm. Sono presenti anche un piccolo connettore strip recante massa, 5V e alimentazione esterna e un connettore strip per la programmazione tramite PicKit.<br />
+I componenti sono tutti <strong>SMD</strong>. Dimensioni: 35x35mm con due fori per montaggio diametro 3,2mm.<br />
+<img src="/icons/pdf2.png" /><a href="/files/pic_can.pdf">schema (pdf)</a>   <img src="/icons/compressed.png" /><a href="/files/pic_can.zip">files Eagle (zip)</a></p>
+
+<hr />
+
+<p><strong>• Scheda con 8 rilevatori di corrente e relè di comando con interfaccia i2c</strong><br />
+Circuito stampato che ospita 8 sensori di passaggio di corrente di tipo tutto/niente (non viene misurata l’intensità effettiva di corrente) indipendenti. In aggiunta sono previsti 4 relè che consentono di alimentare separatamente altrettanti gruppi di sensori; la connessione tra i sensori e i relè è effettuata mediante 5 file di 8 piazzole ciascuna aventi funzione di permutatore. Di ciascun relè viene utilizzato il contatto normalmente chiuso, quindi con relè a riposo i sensori sono alimentati. Sul lato destro è previsto una morsettiera a vite passo 5,08mm a cui attestare l’alimentazione di ciascun gruppo e l’alimentazione a 5V dei fotoaccoppiatori, la quale deve avere <strong>massa comune</strong> con la sorgente di alimentazione dei sensori (e dei carichi ad essi collegati). Corrente massima ammessa per ciascun sensore <strong>2A</strong>.<br />
+La lettura dello stato dei sensori e il comando dei relè avviene tramite interfaccia i2c utilizzando un chip MCP23017: i sensori sono collegati alla porta A, mentre i relè alla porta B. E’ necessario <strong>abilitare i pull-up interni</strong> del chip relativi alla porta A. Sul lato destro è presente un connettore a cui collegare, nell’ordine: alimentazione a 12V per i relè, alimentazione a 5V per il chip di interfaccia, i2c SCL, i2c SDA e massa.<br />
+La maggior parte dei componenti sono <strong>SMD</strong>. Dimensioni: 100x50mm con quattro fori per montaggio diametro 3,2mm.<br />
+<img src="/icons/pdf2.png" /><a href="/files/corrente_rel_i2c.pdf">schema (pdf)</a>   <img src="/icons/compressed.png" /><a href="/files/corrente_rel_i2c.zip">files Eagle (zip)</a></p>
+
+
+        </div> <!-- content -->
+
+            <div id="footerbox">
+                <div id="footer">
+                    Last update: 06 May 2020 &bull;
+                    <br><br>
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="/icons/cc_small.png" />
+                    </a>
+    </div> <!-- body -->
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+    <link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+
+    <title>
+        
+    </title>
+
+</head>
+<body  onload="">
+    <div id="body">
+
+        <br>
+
+        <div id="header">
+            <div id="mainnav" class="dropdown">
+
+                <ul class="menulevel1">
+
+                    <li>
+                        <span>
+                            <a href="/en">Home</a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span>
+                            <a href="/en/chiSono.html">About me</a>
+                        </span>
+                    </li>
+
+                    <li><span>Science and Engineering</span>
+                        <ul class="menulevel2">
+
+                            <li>
+                                <span>
+                                    <a href="/en/projects"> (Semi) Serious Projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/misc_projects"> Misc projects </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/en/experiments"> Hacks and experiments </a>
+                                </span>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="docs"><span>Everything else</span>
+                        <ul class="menulevel2">
+
+                        </ul>
+                </ul>
+
+                <ul class="language">
+                    <li>
+                        <span>
+                            <a href="/it"><img src="/icons/it.png" width="25px" height="16px"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div> <!-- mainnav -->
+        </div> <!-- header -->
+
+        <div id="content">
+
+            <h2 id="miosix-porting-for-vaisala-rs-41sg-radiosonde">Miosix porting for Vaisala RS-41SG radiosonde</h2>
+
+<p>After having found and collected some Vaisala RS-41SG radiosondes, I decided to port the Miosix operating system for their on-board microcontroller: this allows to have a nice enviroment to develop applications using the sonde’s hardware, with little effort.<br />
+The on-board microcontroller is an ST Microelectronics STM32F100C8, with 64kB of flash memory and 8kB or RAM. I will not describe here the overall hardware configuration of the sonde, since an excellent description can be found <a href="https://github.com/bazjo/RS41_Hardware">here</a>. I will also assume that the reader already has the miosix toolchain set up on his/her computer: if this is not the case, <a href="https://miosix.org/wiki/index.php?title=Quick_start">here</a> an installation guide can be found.</p>
+
+<p><strong>Kernel usage:</strong></p>
+
+<p>The miosix kernel is structured so that both the kernel and application code are compiled and linked together to obtain the final executable. The first operation to do when developing an application using the kernel, is obtaining a fresh copy of the kernel sources. This can be done using <em>git</em>, in this way:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    git clone https://miosix.org/git-public/miosix-kernel.git
+    cd miosix-kernel
+    git fetch origin
+    git checkout -b testing origin/testing
+</code></pre></div></div>
+
+<p>This will create a folder named <em>miosix-kernel</em> containing both the kernel sources and a stub for the main source file. The last command switches to the <em>testing</em> branch of the repository, which is the one containing the latest changes.</p>
+
+<p>To configure the kernel for our target, one has to open the file <em>Makefile.inc</em>, located in <em>miosix-kernel/miosix/config</em> folder, and uncomment the 49th line removing the leading #. The final result should be:</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">#OPT_BOARD := stm32f303vc_stm32f3discovery
+</span>    <span class="nv">OPT_BOARD</span> <span class="o">:=</span> stm32f100c8_vaisala_rs41
+</code></pre></div></div>
+
+<p>Then, at lines 562-564 of the same file, there is the possibily to configure the microntroller’s clock signal:</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c">#CLOCK_FREQ := -DSYSCLK_FREQ_8MHz=8000000
+</span>    <span class="nv">CLOCK_FREQ</span> <span class="o">:=</span> <span class="nt">-DSYSCLK_FREQ_24MHz</span><span class="o">=</span>24000000 <span class="nt">-DRUN_WITH_HSI</span>
+    <span class="c">#CLOCK_FREQ := -DSYSCLK_FREQ_24MHz=24000000 -DHSE_VALUE=24000000
+</span></code></pre></div></div>
+<p>The three options correspond to the following clock configurations:</p>
+
+<ul>
+  <li>core clocked at 8MHz using the internal RC oscillator;</li>
+  <li>core clocked at 24MHz using the internal RC oscillator for PLL time base;</li>
+  <li>core clocked at 24MHz using the external 24MHz crystal.</li>
+  <li></li>
+</ul>
+
+<p>By default, the microcontroller runs at 24MHz using the internal oscillator for PLL time base. On the other hand, when all the three options are commented out, the microcontroller is automatically configured to run at 8MHz using the internal oscillator.</p>
+
+<p><strong>Notice:</strong> if the third option is selected and the program is flashed onto a radiosonde recovered after some time, there is the possibily that the microcontroller will not execute the code. This is due to the fact that a long exposure to the outside elements, in particular high levels of humidity, can damage the external oscillator, which is a rather delicate component.</p>
+
+<p>After having configured the <em>Makefile.inc</em> file, it’s time to edit the one named <em>miosix_settings.h</em>, located in the same folder and providing the kernel configuration options. Here, first of all we have to comment out the line 37 to remove the compilation error which will remind us that the file has not been yet edited. Then, is a good idea to commend out the lines 88, 93 and 101: this will disable the filesystem support - which in our case is useless since we do not have any kind of memory device - thus saving some code size.</p>
+
+<p>After these configurations, is possible to compile the kernel and the application code by issuing the <em>make</em> command in the directory containing the main Makefile, which is also the one containing the <em>main.cpp</em> file.</p>
+
+<p><strong>Hardware interfaces:</strong></p>
+
+<p>The kernel’s board support package comes with a file providing handy labels (actually they are <em>typedef</em>s) for the microcontroller’s gpios; the labels are grouped in namespaces associated to their functionality. To use these labels, the application’s source code has to use the directive <em>#include “interfaces-impl/hwmapping.h”</em>.</p>
+
+<p><strong>•</strong> <em>GPS module:</em></p>
+
+<p>The Ublox UBX-6010 GPS module is connected to the microcontroller through a serial interface, plus a reset signal. The serial interface is connected to USART1 on pins PA9 and PA10 and the communication runs at 9600 baud, while the reset signal is connected to PA15 and has negated logic (to reset the GPS one has to pull the line to low state).
+There is no need to write a custom driver for the serial interface, since USART1 is already supported by the STM32Serial driver.</p>
+
+<p><strong>•</strong> <em>SPI devices:</em></p>
+
+<p>All the SPI devices - the radio transmitter and the (optional) eeprom and barometer - share the same bus, connected to the microcontroller’s SPI2 peripheral using pins PB13, PB14 and PB15. The <em>chip select</em> signals are distributed in this way: PA8 for the barometer, PB2 for the eeprom and PC13 for the radio transmitter.</p>
+
+<p><strong>•</strong> <em>XDATA connector:</em></p>
+
+<p>The sonde has an XDATA interface connector (Amphenol Minitek <a href="https://www.amphenol-icc.com/minitek-98464g6110lf.html">98464-G61-10LF</a>), located at its bottom, opposite to the antenna and below the turn-on button, and having this pinout:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>             Pinout of XDATA connector                     Pinout of connected ribbon cable, when using 89361-710LF mating connector
+                     -------
+               GND  | o   o |  XDATA_RX(PB11)                                          &gt; 1  GND
+                    |       |                                                            2  XDATA_RX(PB11)
+    XDATA_TX(PB10)  | o   o |  +3V_MCU                                                   3  XDATA_TX(PB10) 
+                   -        |                                                            4  +3V_MCU
+           V_Boost|   o   o |  VBAT                                                      5  V_Boost
+                   -        |                                                            6  VBAT
+           MCU_RST  | o   o |  SWCLK(PA14)                                               7  MCU_RST
+                    |       |                                                            8  SWCLK(PA14)
+       SWDIO(PA13)  | o   o |  GND                                                       9  SWDIO(PA13)
+                     -------                                                            10  GND
+    
+</code></pre></div></div>
+<p>Two mating connectors are available, both from the same manufacturer of the sonde’s one:</p>
+<ul>
+  <li><a href="https://www.amphenol-icc.com/minitek-89361710lf.html">89361-710LF</a> for ribbon cables;</li>
+  <li><a href="https://www.amphenol-icc.com/minitek-90311010lf.html">90311-010LF</a> crimp-to-wire (requires also crimp contacts <a href="https://www.amphenol-icc.com/minitek-77138101lf.html">77138-101LF</a>);</li>
+  <li></li>
+</ul>
+
+<p>Here, the SWD interface allows to re-program the internal microcontroller, and eventually to debug the application code via OpenOCD and gdb. The pins labelled XDATA_RX and XDATA_TX are connected to microntroller’s USART3 and used by the miosix serial interface, running at 19200 baud 8N1. The MCU_RST pin, if connected to GND, puts the microcontroller in reset state.</p>
+
+<p><strong>Flashing the new firmware for the first time:</strong></p>
+
+<p>The original firmware comes with the flash memory having both the readout protection enabled and with some sectors having write protection enabled. Thus, before being able to write a new binary image to the flash memory, it’s necessary to remove all the protections: the readout protection can be removed using OpenOCD through specific commands, which also perform a complete flash erase. As regards the write protection, it can be removed by using the ST Microelectronics’ tool ST-LINK Utility.</p>
+
+<p><strong>Note:</strong> there can be some issues affecting flash memory unlocking through OpenOCD, thus I strongly reccommend using the ST-LINK Utility.</p>
+
+<p>Once the flash memory has been unlocked, the new firmware image can be written with any tool, being it OpenOCD, ST-LINK Utility, or any other one. The new firmware is correctly written to flash and executed when, resetting the sonde’s microcontroller, there is a short flash of the red led and the kernel’s boot log is printed on the serial interface (unless disabled in miosix’s configuration file).</p>
+
+<p><strong>Code examples:</strong></p>
+<ul>
+  <li><a href="/files/RS41_examples/led_blink.cpp"><img src="/icons/file.svg" style="vertical-align: -35%;" /></a> Alternate blink of green and red leds.</li>
+  <li><a href="/files/RS41_examples/stdio.cpp"><img src="/icons/file.svg" style="vertical-align: -35%;" /></a>     Usage of C standard input/output through serial console.</li>
+  <li><a href="/files/RS41_examples/print_gps.cpp"><img src="/icons/file.svg" style="vertical-align: -35%;" /></a> Redirection of GPS sentences on serial console.</li>
+  <li></li>
+</ul>
+
+<p><strong>References:</strong></p>
+
+<p>[1] <a href="https://www.miosix.org">Miosix kernel official page</a></p>
+
+<p>[2] <a href="https://miosix.org/wiki/index.php?title=Miosix_code_size_optimization">Code size optimisations to reduce kernel’s binary size</a></p>
+
+<p>[3] <a href="https://www.st.com/resource/en/datasheet/stm32f100c8.pdf">STM32F100C8 Datasheet</a></p>
+
+<p>[4] <a href="https://www.st.com/resource/en/reference_manual/cd00246267.pdf">STM32F100xx Reference Manual</a></p>
+
+<p>[5] <a href="https://github.com/bazjo/RS41_Hardware">Vaisala RS-41 hardware reverse engineering</a></p>
+
+<p>[6] <a href="https://www.eevblog.com/forum/blog/eevblog-1207-arm-dev-boards-falling-from-the-sky!/">EEVblog forum thread about radiosondes</a></p>
+
+
+        </div> <!-- content -->
+
+            <div id="footerbox">
+                <div id="footer">
+                    Last update: 06 May 2020 &bull;
+                    <br><br>
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="/icons/cc_small.png" />
+                    </a>
+    </div> <!-- body -->
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+    <link rel="stylesheet" href="/css/stylesheet.css" type="text/css">
+
+    <title>
+        
+    </title>
+
+</head>
+<body  onload="">
+    <div id="body">
+
+        <br>
+
+        <div id="header">
+            <div id="mainnav" class="dropdown">
+
+                <ul class="menulevel1">
+
+                    <li>
+                        <span>
+                            <a href="/it">Home</a>
+                        </span>
+                    </li>
+
+                    <li>
+                        <span>
+                            <a href="/it/chiSono.html">About me</a>
+                        </span>
+                    </li>
+
+                    <li><span>Scienza e Ingegneria</span>
+                        <ul class="menulevel2">
+
+                            <li>
+                                <span>
+                                    <a href="/it/progetti"> Progetti (semi) seri </a>
+                                </span>
+                            </li>
+                            <li>
+                                <span>
+                                    <a href="/it/lavori_vari"> Creazioni varie </a>
+                                </span>
+                            </li>
+
+                            <li>
+                                <span>
+                                    <a href="/it/esperimenti"> Esperimenti e <i>hack </i> </a>
+                                </span>
+                            </li>
+
+                        </ul>
+                    </li>
+
+                    <li class="docs"><span>Tutto il resto</span>
+                        <ul class="menulevel2">
+                            <!-- <li>
+                                <span>
+                                    <a href="raccolta_link.html"> Raccolta di link vari </a>
+                                </span>
+                            </li> -->
+                        </ul>
+                </ul>
+
+                <ul class="language">
+                    <li>
+                        <span>
+                            <a href="/en"><img src="/icons/en.png" width="25px" height="16px"></a>
+                        </span>
+                    </li>
+                </ul>
+            </div> <!-- mainnav -->
+        </div> <!-- header -->
+
+        <div id="content">
+
+            <h2 id="contapersone">Contapersone:</h2>
+
+<p>A gennaio del 2016, in occasione della Notte bianca dei licei classici, il liceo Zucchi di Monza mi ha chiesto di realizzare un sistema che consentisse di ottenere una stima,
+mediante conteggio, del numero di visitatori accolti durante l’iniziativa.<br />
+Il sistema realizzato allora era costituito da una scheda Arduino Leonardo cui è stato collegato un display LCD 2x8 caratteri, un tasto per l’azzeramento del conteggio e, per il
+rilevamento del passaggio delle persone, un sensore ottico a sbarramento. Quest’anno, visto il successo che ha avuto l’iniziativa l’anno precedente, mi è stato chiesto di modificare il sistema in modo da rendere il conteggio visibile anche ai visitatori in arrivo attraverso l’uso di un monitor o di un proiettore. Per fare questo ho scelto di 
+riciclare un vecchio computer della scuola non più in uso al quale, da una parte, viene collegato il sistema già esistente e, dall’altra, il monitor o proiettore del caso.<br />
+Tutto il sistema è organizzato nel seguente modo: sul computer sono in esecuzione un programma scritto ad hoc e un’istanza di un browser web; il programma richiede, tramite 
+comunicazione seriale, il valore attuale del conteggio al sistema preesistente e, sulla base di questo e un file template, genera in locale una pagina html, il quale viene letto
+e mostrato a schermo dal browser web. Ho deciso di utilizzare un browser web per la parte di visualizzazione in modo da rendere semplice lo sviluppo della parte “estetica” del 
+contatore: l’aspetto della schermata vista da chi arriva può essere progettato come se si trattasse di una pagina web qualsiasi.</p>
+
+<h5 id="parte-realizzata-con-arduino">Parte realizzata con Arduino:</h5>
+
+<p>Nel modulo di conteggio il numero delle persone è gestito da una variabile a 32 bit senza segno che viene incrementata ogniqualvolta il segnale in arrivo dal sensore ha una
+transizione dal livello alto a quello basso (questo è dovuto al tipo di segnale in uscita dal sensore). La gestione dell’impulso di conteggio è fatta tramite interrupt in modo da 
+garantire che non vengano persi degli impulsi, mentre la gestione della porta seriale, del tasto di azzeramento e lo schermo LCD sono affidati al ciclo principale del sistema.<br />
+La comunicazione seriale avviene ad una velocità di 9600 bit al secondo ed è basata sul seguente protocollo:</p>
+<ul>
+  <li>il PC invia, in sequenza, due byte dal valore (in esadecimale) 0x55 e 0xDD</li>
+  <li>il programma eseguito su arduino controlla periodicamente la porta seriale e, se vengono ricevuti i byte corretti (sia per quanto riguarda l’ordine che il valore), invia al PC il valore assunto dalla variabile di conteggio a partire dal byte meno significativo.</li>
+</ul>
+
+<p>In particolare, poiché sia il PC che Arduino sono <em>little endian</em> l’invio del valore del contatore è effettuato in questo modo:</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">uint8_t</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="p">)</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">);</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Serial1</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">50</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Essenzialmente si prende un puntatore alla variabile “counter” (ovvero quella che contiene il numero di persone transitate) e lo si tratta come se fosse un array di 4 numeri a 8 bit, in questo modo si riesce a inviare il valore della variabile a 32 bit senza dover ricorrere all’uso di maschere e scorrimenti di bit.</p>
+
+<h5 id="parte-su-pc">Parte su PC:</h5>
+
+<p>Il programma in esecuzione sul PC non fa altro che richiedere il valore del conteggio due volte al secondo aggiornando opportunamente la pagina html che poi verrà mostrata dal 
+browser. Come detto prima, il contenuto della pagina html prodotta viene letto da un file template opportuno; l’unico requisito che deve avere questo file è quello di contenere la 
+parola “counter_val” laddove si desidera che venga inserito il valore del conteggio.<br />
+Poiché l’inserimento del numero viene effettuato tramite una regex è possibile modificare a piacere la “parola chiave” che indica il posto dove svolgere questa operazione: semplicemente basta cambiare il valore tra virgolette specificato in questa direttiva</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cp">#define REGX_TAG "counter_val"</span></code></pre></figure>
+
+<p>collocata nelle prime righe del file <em>main.cpp</em>.<br />
+Al momento questo programma può essere compilato ed eseguito solo in ambiente Linux, anche se modificarlo per consentirne l’esecuzione su un altro sistema operativo non dovrebbe 
+un’operazione troppo complessa. L’unica nota da fare circa la compilazione è che è richiesto GCC 5.0 o successivo, in caso contrario il meccanismo di sostituzione tramite regex non
+funziona.</p>
+
+<p><strong>Infine, <a href="https://github.com/silseva/Contapersone">qui</a> è disponibile il codice sorgente di tutto l’accrocchio.</strong></p>
+
+
+        </div> <!-- content -->
+
+            <div id="footerbox">
+                <div id="footer">
+                    Last update: 06 May 2020 &bull;
+                    <br><br>
+                    <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <img alt="Creative Commons License" style="border-width:0" src="/icons/cc_small.png" />
+                    </a>
+    </div> <!-- body -->
+</body>
+</html>
